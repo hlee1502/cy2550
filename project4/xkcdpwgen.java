@@ -1,0 +1,148 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.Scanner;
+
+public class xkcdpwgen {
+
+  public static void main(String[] args){
+    Scanner scanner = new Scanner(System.in);
+
+    int words = 4;
+    int caps = 0;
+    int numbers = 0;
+    int symbols = 0;
+    String helpMessage =
+            "usage: xkcdpwgen [-h] [-w WORDS] [-c CAPS] [-n NUMBERS] [-s SYMBOLS]\n\n" +
+            "Generate a secure, memorable password using the XKCD method\n\n" +
+            "optional arguments:\n" +
+            "     -h, --help            show this help message and exit\n" +
+            "     -w WORDS, --words WORDS\n" +
+            "                           include WORDS words in the password (default=4)\n" +
+            "     -c CAPS, --caps CAPS  capitalize the first letter of CAPS random words\n" +
+            "                           (default=0)\n" +
+            "     -n NUMBERS, --numbers NUMBERS\n" +
+            "                           insert NUMBERS random numbers in the password\n" +
+            "                           (default=0)\n" +
+            "     -s SYMBOLS, --symbols SYMBOLS\n" +
+            "                           insert NUMBERS random numbers in the password\n" +
+            "                           (default=0)";
+
+    for (int i = 0; i < args.length - 1; i++) {
+      if (args[i].equals("-h") || args[i].equals("--help")) {
+        System.out.println(helpMessage);
+      } else if (args[i].equals("-w") || args[i].equals("--words")) {
+        i++;
+        if (i < args.length) {
+          words = Integer.parseInt(args[i]);
+        } else {
+          System.err.println("Missing value for -w option");
+          System.exit(1);
+        }
+      } else if (args[i].equals("-c") || args[i].equals("--caps")) {
+        i++;
+        if (i < args.length) {
+          caps = Integer.parseInt(args[i]);
+        } else {
+          System.err.println("Missing value for -c option");
+          System.exit(1);
+        }
+      } else if (args[i].equals("-n") || args[i].equals("--numbers")) {
+        i++;
+        if (i < args.length) {
+          numbers = Integer.parseInt(args[i]);
+        } else {
+          System.err.println("Missing value for -n option");
+          System.exit(1);
+        }
+      } else if (args[i].equals("-s") || args[i].equals("--symbols")) {
+        i++;
+        if (i < args.length) {
+          symbols = Integer.parseInt(args[i]);
+        } else {
+          System.err.println("Missing value for -s option");
+          System.exit(1);
+        }
+      } else {
+        System.err.println("Invalid argument:" + args[i]);
+        System.exit(1);
+      }
+    }
+
+    ArrayList<String> wordList = new ArrayList<String>();
+    try {
+      File wordFile = new File("words.txt");
+      Scanner wordListScanner = new Scanner(wordFile);
+      while (wordListScanner.hasNextLine()) {
+        wordList.add(wordListScanner.nextLine());
+      }
+      wordListScanner.close();
+    } catch (FileNotFoundException e) {
+      System.err.println("Word text file not found.");
+      System.exit(1);
+    }
+
+    ArrayList<String> pwWordList = new ArrayList<String>();
+    for (int i = 0; i < words; i++) {
+      Random randWord = new Random();
+      int randInt = randWord.nextInt(wordList.size());
+      String word = wordList.get(randInt);
+      if (caps > 0) {
+        word = word.substring(0, 1).toUpperCase() + word.substring(1);
+        caps--;
+      }
+      pwWordList.add(word);
+    }
+
+    String password = "";
+    for (int i = 0; i < pwWordList.size(); i++) {
+      password += pwWordList.get(i);
+    }
+
+    Random random = new Random();
+    while (symbols > 0) {
+      ArrayList<Character> symbolList = new ArrayList<Character>();
+      symbolList.add('~');
+      symbolList.add('!');
+      symbolList.add('@');
+      symbolList.add('#');
+      symbolList.add('$');
+      symbolList.add('%');
+      symbolList.add('^');
+      symbolList.add('&');
+      symbolList.add('*');
+      symbolList.add('(');
+      symbolList.add(')');
+      symbolList.add('?');
+      symbolList.add('.');
+      symbolList.add(',');
+      symbolList.add(';');
+      symbolList.add(':');
+
+
+      char randSymbol = symbolList.get(random.nextInt(symbolList.size()));
+      String symString = String.valueOf(randSymbol);
+
+      int index = random.nextInt(password.length() + 1);
+      password = password.substring(0, index) + symString + password.substring(index);
+      symbols--;
+    }
+
+    while (numbers > 0) {
+      ArrayList<Character> numList = new ArrayList<Character>();
+      for (char n = '0'; n <= '9'; n++) {
+        numList.add(n);
+      }
+
+      char randNumber = numList.get(random.nextInt(numList.size()));
+      String numString = String.valueOf(randNumber);
+
+      int index = random.nextInt(password.length() + 1);
+      password = password.substring(0, index) + numString + password.substring(index);
+      numbers--;
+    }
+
+    System.out.println(password);
+  }
+}
