@@ -1,0 +1,23 @@
+# Last Modified: Wed Mar 29 20:10:42 2023
+abi <abi/3.0>,
+
+include <tunables/global>
+
+/home/leehannah2/cy2550/project6/p2 {
+  include <abstractions/base>
+
+  /home/leehannah2/cy2550/project6/p2 mr,
+  /tmp/project* rw,
+  /home/leehannah2/.project2/config w,
+  /var/log/syslog r,
+  /etc/fstab r,
+  /proc/version r,
+  /proc/buddyinfo r,
+  /etc/crontab r,
+  /etc/resolv.conf r,
+  /run/systemd/resolve/stub-resolv.conf r,
+  /etc/passwd r,
+  /etc/hosts r,
+  /home/leehannah2/cy2550/project6/template r,
+  network tcp,
+}
